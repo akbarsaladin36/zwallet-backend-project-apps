@@ -1,4 +1,5 @@
 const express = require('express')
+// const http = require('http')
 require('dotenv').config()
 const morgan = require('morgan')
 const cors = require('cors')
@@ -10,6 +11,8 @@ const routerNavigation = require('./routes')
 
 const app = express()
 const port = process.env.DB_PORT
+// const server = http.createServer(app)
+// const io = require('socket.io')(server)
 
 app.use(morgan('dev'))
 app.use(cors())
@@ -21,8 +24,33 @@ app.use(compression())
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
-app.use('/backend3/api/v1', routerNavigation)
-app.use('/backend3/api', express.static('src/uploads'))
+app.use('/backend4/api/v1', routerNavigation)
+app.use('/backend4/api', express.static('src/uploads'))
+
+// io.on('connection', (socket) => {
+//   console.log('new user connected')
+
+//   socket.on('broadcastMessage', (data) => {
+//     console.log(data)
+//     socket.broadcast.emit('chatMessage', data)
+//   })
+
+//   socket.on('joinRoom', (data) => {
+//     console.log(data)
+//     if (data.oldRoom) {
+//       socket.leave(data.oldRoom)
+//     }
+//     socket.join(data.room)
+//     socket.broadcast.to(data.room).emit('chatMessage', {
+//       username: 'BOT',
+//       message: `${data.username} joined Chat!`
+//     })
+//   })
+
+//   socket.on('roomMessage', (data) => {
+//     io.to(data.room).emit('chatMessage', data)
+//   })
+// })
 
 app.listen(port, () => {
   console.log(`Express app is listen on port ${port} !`)
