@@ -5,7 +5,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       connection.query(
         `SELECT * FROM users WHERE user_phone LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
-        [limit, offset, keywords],
+        [keywords, limit, offset],
         (error, result) => {
           console.log(error)
           console.log(result)

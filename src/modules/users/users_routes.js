@@ -23,13 +23,11 @@ router.patch(
 router.patch(
   '/update-pin',
   authMiddleware.userAuthentication,
-  uploadFile,
   usersController.updatePin
 )
 router.patch(
   '/update-password',
   authMiddleware.userAuthentication,
-  uploadFile,
   usersController.updateUserPassword
 )
 

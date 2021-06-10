@@ -41,23 +41,27 @@ module.exports = {
         parseInt(limit)
       )
 
-      if (!result.transaction_type) {
-        result.receiverDetail = await transactionModel.getUsersDetailData(
-          result.transaction_receiver_id
-        )
-      } else {
-        result.senderDetail = await transactionModel.getUsersDetailData(
-          result.transaction_sender_id
-        )
+      for (const transaction of result) {
+        if (!transaction.transaction_type) {
+          transaction.receiverDetail =
+            await transactionModel.getUsersDetailData(
+              transaction.transaction_receiver_id
+            )
+        } else {
+          transaction.senderDetail = await transactionModel.getUsersDetailData(
+            transaction.transaction_sender_id
+          )
+        }
       }
 
       return helper.response(
         res,
         200,
-        'Success get a transaction history.',
+        'Success get a transaction history from users.',
         result
       )
     } catch (error) {
+      console.log(error)
       return helper.response(res, 404, 'Bad Request', null)
     }
   },
@@ -71,7 +75,9 @@ module.exports = {
       transactionAmount = parseInt(transactionAmount) || 0
 
       if (transactionType) {
-        let userBalance = await transactionModel.getOneBalanceData(senderId)
+        let userBalance = await transactionModel.getOneBalanceData(
+          req.decodeToken.user_id
+        )
         userBalance += transactionAmount
         await transactionModel.updateOneBalanceData(
           { balance: userBalance },
@@ -139,7 +145,7 @@ module.exports = {
         return helper.response(
           res,
           200,
-          'Transaction has been success!',
+          'Transaction has been successfull!',
           result
         )
       }

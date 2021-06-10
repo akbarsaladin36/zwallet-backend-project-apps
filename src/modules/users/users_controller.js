@@ -174,6 +174,7 @@ module.exports = {
         )
       }
     } catch (error) {
+      console.log(error)
       return helper.response(res, 404, 'Bad Request', null)
     }
   }

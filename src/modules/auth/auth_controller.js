@@ -57,7 +57,7 @@ module.exports = {
         if (checkPassword) {
           const payload = {
             user_id: checkEmailUser[0].user_id,
-            user_email: checkEmailUser[0].user_name,
+            user_email: checkEmailUser[0].user_email,
             user_pin: checkEmailUser[0].user_pin.length
           }
           delete payload.user_password

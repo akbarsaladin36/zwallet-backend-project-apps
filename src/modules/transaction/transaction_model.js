@@ -72,7 +72,7 @@ module.exports = {
   getUsersDetailData: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT user_email, user_phone, user_name, user_email FROM users WHERE user_id=?',
+        'SELECT user_email, user_phone, user_name, user_image FROM users WHERE user_id=?',
         id,
         (error, result) => {
           if (!error) {
