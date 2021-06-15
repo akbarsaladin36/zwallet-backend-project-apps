@@ -63,6 +63,7 @@ module.exports = {
         )
       }
     } catch (error) {
+      console.log(error)
       return helper.response(res, 404, 'Bad Request', null)
     }
   },
@@ -81,9 +82,9 @@ module.exports = {
         )
       }
 
-      const { userEmail, userName } = req.body
+      const { userPhone, userName } = req.body
       const setData = {
-        user_email: userEmail,
+        user_phone: userPhone,
         user_name: userName,
         user_image: req.file ? req.file.filename : result[0].user_image
       }

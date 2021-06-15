@@ -19,4 +19,10 @@ router.post(
   transactionController.transferMoney
 )
 
+router.post(
+  '/top-up',
+  authMiddleware.userAuthentication,
+  transactionController.topupMoney
+)
+
 module.exports = router

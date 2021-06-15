@@ -15,6 +15,7 @@ module.exports = {
         result
       )
     } catch (error) {
+      console.log(error)
       return helper.response(res, 404, 'Bad Request', null)
     }
   },
@@ -47,7 +48,6 @@ module.exports = {
             await transactionModel.getUsersDetailData(
               transaction.transaction_receiver_id
             )
-        } else {
           transaction.senderDetail = await transactionModel.getUsersDetailData(
             transaction.transaction_sender_id
           )
@@ -75,24 +75,6 @@ module.exports = {
       transactionAmount = parseInt(transactionAmount) || 0
 
       if (transactionType) {
-        let userBalance = await transactionModel.getOneBalanceData(
-          req.decodeToken.user_id
-        )
-        userBalance += transactionAmount
-        await transactionModel.updateOneBalanceData(
-          { balance: userBalance },
-          req.decodeToken.user_id
-        )
-
-        const result = await transactionModel.addTransactionData({
-          transaction_type: transactionType,
-          transaction_receiver_id: req.decodeToken.user_id,
-          transaction_amount: transactionAmount,
-          transaction_status: 1
-        })
-
-        return helper.response(res, 200, 'Top Up has been success!', result)
-      } else {
         const senderPinDb = await transactionModel.getOnePinData(senderId)
         const checkValidPin = bcrypt.compareSync(senderPin, senderPinDb)
 
@@ -136,6 +118,7 @@ module.exports = {
         )
 
         const result = await transactionModel.addTransactionData({
+          transaction_type: transactionType,
           transaction_sender_id: senderId,
           transaction_receiver_id: receiverId,
           transaction_amount: transactionAmount,
@@ -152,6 +135,36 @@ module.exports = {
     } catch (error) {
       console.log(error)
       return helper.response(res, 404, 'Bad Request', null)
+    }
+  },
+
+  topupMoney: async (req, res) => {
+    try {
+      let { topupMethod, topupAmount } = req.body
+
+      topupAmount = parseInt(topupAmount) || 0
+
+      if (topupMethod) {
+        let userBalance = await transactionModel.getOneBalanceData(
+          req.decodeToken.user_id
+        )
+        userBalance += topupAmount
+        await transactionModel.updateOneBalanceData(
+          { balance: userBalance },
+          req.decodeToken.user_id
+        )
+
+        const result = await transactionModel.addTopUpData({
+          topup_method: topupMethod,
+          topup_user_id: req.decodeToken.user_id,
+          topup_amount: topupAmount,
+          topup_status: 1
+        })
+
+        return helper.response(res, 200, 'Top Up has been success!', result)
+      }
+    } catch (error) {
+      return helper.response(res, 404, 'Bad Request')
     }
   }
 }
