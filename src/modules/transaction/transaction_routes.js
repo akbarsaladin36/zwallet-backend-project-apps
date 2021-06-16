@@ -13,16 +13,17 @@ router.get(
   authMiddleware.userAuthentication,
   transactionController.getUsersBalance
 )
+
+router.get(
+  '/balance/:id',
+  authMiddleware.userAuthentication,
+  transactionController.getUsersBalanceById
+)
+
 router.post(
   '/',
   authMiddleware.userAuthentication,
   transactionController.transferMoney
-)
-
-router.post(
-  '/top-up',
-  authMiddleware.userAuthentication,
-  transactionController.topupMoney
 )
 
 module.exports = router

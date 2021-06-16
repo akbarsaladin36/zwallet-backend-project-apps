@@ -76,7 +76,7 @@ module.exports = {
         id,
         (error, result) => {
           if (!error) {
-            resolve(result[0] ? result[0].user_pin : null)
+            resolve(result[0] ? result[0] : null)
           } else {
             reject(new Error(error))
           }
@@ -103,23 +103,6 @@ module.exports = {
           }
         }
       )
-    })
-  },
-
-  addTopUpData: (setData) => {
-    return new Promise((resolve, reject) => {
-      connection.query('INSERT INTO topup SET ?', setData, (error, result) => {
-        console.log(error)
-        if (!error) {
-          const newResult = {
-            id: result.insertId,
-            ...setData
-          }
-          resolve(newResult)
-        } else {
-          reject(new Error(error))
-        }
-      })
     })
   }
 }
