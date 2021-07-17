@@ -17,7 +17,6 @@ router.get(
 router.patch(
   '/update-profile',
   authMiddleware.userAuthentication,
-  uploadFile,
   usersController.updateUsersProfile
 )
 router.patch(
@@ -29,6 +28,12 @@ router.patch(
   '/update-password',
   authMiddleware.userAuthentication,
   usersController.updateUserPassword
+)
+router.patch(
+  '/update-image',
+  authMiddleware.userAuthentication,
+  uploadFile,
+  usersController.updateUserImage
 )
 
 module.exports = router

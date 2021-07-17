@@ -7,8 +7,8 @@ module.exports = {
         `SELECT * FROM users WHERE user_phone LIKE ? ORDER BY ${sort} LIMIT ? OFFSET ?`,
         [keywords, limit, offset],
         (error, result) => {
-          console.log(error)
-          console.log(result)
+          // console.log(error)
+          // console.log(result)
           if (!error) {
             resolve(result)
           } else {
@@ -57,6 +57,8 @@ module.exports = {
         'UPDATE users SET ? WHERE user_id=?',
         [data, id],
         (error, result) => {
+          // console.log(error)
+          // console.log(result)
           if (!error) {
             const newResult = {
               id: id,

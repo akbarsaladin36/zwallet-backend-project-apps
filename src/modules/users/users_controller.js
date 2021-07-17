@@ -8,7 +8,6 @@ const fs = require('fs')
 module.exports = {
   getAllUsersData: async (req, res) => {
     try {
-      // console.log(req.query)
       let { page, limit, sort, keywords } = req.query
 
       limit = limit || '6'
@@ -85,21 +84,7 @@ module.exports = {
       const { userPhone, userName } = req.body
       const setData = {
         user_phone: userPhone,
-        user_name: userName,
-        user_image: req.file ? req.file.filename : result[0].user_image
-      }
-
-      if (req.file) {
-        if (result[0].user_image.length > 0) {
-          const checkIfImageExist = `/src/uploads/${result[0].user_image}`
-          fs.unlink(checkIfImageExist, (error) => {
-            if (error) {
-              console.log('this image cannot be deleted.')
-            } else {
-              console.log('this image is deleted.')
-            }
-          })
-        }
+        user_name: userName
       }
 
       const newResult = await usersModel.updateUserData(setData, id)
@@ -117,33 +102,77 @@ module.exports = {
 
   updatePin: async (req, res) => {
     try {
-      const userId = req.decodeToken.user_id
+      const id = req.decodeToken.user_id
       let newPin = req.body.newPin
       const checkPin = /^[0-9]+$/.test(newPin)
 
       if (newPin.length !== 6 || checkPin === false) {
-        return helper.response(res, 403, 'Pin must typed by number.', null)
+        return helper.response(res, 403, 'Pin must typed by number.')
       }
 
       const salt = bcrypt.genSaltSync(10)
       newPin = bcrypt.hashSync(newPin, salt)
 
-      const result = await usersModel.updateUserData(
-        { user_pin: newPin },
-        userId
+      const result = await usersModel.updateUserData({ user_pin: newPin }, id)
+      return helper.response(
+        res,
+        200,
+        `Success updating a pi for user ${id}`,
+        result
       )
-      return helper.response(res, 200, 'Success updating a pin', result)
     } catch (error) {
+      console.log(error)
       return helper.response(res, 400, 'Bad Request', null)
+    }
+  },
+
+  updateUserImage: async (req, res) => {
+    try {
+      const id = req.decodeToken.user_id
+      const setData = {
+        user_image: req.file ? req.file.filename : '',
+        user_updated_at: new Date(Date.now())
+      }
+      const updateData = await usersModel.getOneUserData(id)
+      if (updateData.length > 0) {
+        if (updateData.length > 0) {
+          const imageDelete = updateData[0].user_image
+          const imageExist = fs.existsSync(`src/uploads/${imageDelete}`)
+
+          if (imageExist && imageDelete) {
+            fs.unlink(`src/uploads/${imageDelete}`, (err) => {
+              if (err) throw err
+            })
+          }
+        }
+
+        const result = await usersModel.updateUserData(setData, id)
+        return helper.response(
+          res,
+          200,
+          `Success uploading an profile image with ${id}`,
+          result
+        )
+      } else {
+        return helper.response(
+          res,
+          403,
+          `the user image with ${id} is not found. Please try again.`,
+          null
+        )
+      }
+    } catch (error) {
+      console.log(error)
+      return helper.response(res, 404, 'Bad Request', null)
     }
   },
 
   updateUserPassword: async (req, res) => {
     try {
-      const userId = req.decodeToken.user_id
+      const id = req.decodeToken.user_id
       const { userCurrentPassword, userNewPassword } = req.body
 
-      const result = await usersModel.getOneUserData(userId)
+      const result = await usersModel.getOneUserData(id)
       if (result[0].length === 0) {
         return helper.response(res, 403, 'User data is not found', null)
       }
@@ -159,7 +188,7 @@ module.exports = {
         const setData = {
           user_password: userNewPassword1
         }
-        const newResult = await usersModel.updateUserData(setData, userId)
+        const newResult = await usersModel.updateUserData(setData, id)
         return helper.response(
           res,
           200,

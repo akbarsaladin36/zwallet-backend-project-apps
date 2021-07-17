@@ -21,13 +21,13 @@ module.exports = {
     } else {
       return helper.response(res, 403, 'Please login first to the website.')
     }
-  },
-
-  isAdmin: (req, res, next) => {
-    if (req.decodeToken.user_account_status === 'admin') {
-      next()
-    } else {
-      return helper.response(res, 403, 'This website can be accessed by admin.')
-    }
   }
+
+  // isAdmin: (req, res, next) => {
+  //   if (req.decodeToken.user_account_status === 'admin') {
+  //     next()
+  //   } else {
+  //     return helper.response(res, 403, 'This website can be accessed by admin.')
+  //   }
+  // }
 }
