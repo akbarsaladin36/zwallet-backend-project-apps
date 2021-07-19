@@ -4,6 +4,8 @@ const usersController = require('./users_controller')
 const authMiddleware = require('../../middleware/auth')
 const uploadFile = require('../../middleware/upload')
 
+router.get('/user-activation/:id', usersController.updateUserVerifiedAccount)
+
 router.get(
   '/',
   authMiddleware.userAuthentication,
@@ -34,6 +36,13 @@ router.patch(
   authMiddleware.userAuthentication,
   uploadFile,
   usersController.updateUserImage
+)
+
+router.patch(
+  '/delete-image',
+  authMiddleware.userAuthentication,
+  uploadFile,
+  usersController.deleteUserImage
 )
 
 module.exports = router

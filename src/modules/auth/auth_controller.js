@@ -2,8 +2,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const helper = require('../../helpers/wrapper')
 const authModel = require('./auth_model')
-// const nodemailer = require('nodemailer')
-// const fs = require('fs')
+const nodemailer = require('nodemailer')
 require('dotenv').config()
 
 module.exports = {
@@ -25,11 +24,42 @@ module.exports = {
           user_name: userName,
           user_password: encryptPassword,
           user_phone: userPhone,
-          user_verify: 1
+          user_verify: 0
         }
         const result = await authModel.registerUser(setData)
         delete result.user_password
         await authModel.addBalanceData({ user_id: result.id, balance: 0 })
+
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+          auth: {
+            user: process.env.SMTP_EMAIL,
+            pass: process.env.SMTP_PASSWORD
+          }
+        })
+
+        const mailOptions = {
+          from: '"Zwallet Admin" <adminTickitz.gmail.com>',
+          to: result.user_email,
+          subject: 'Zwallet- Activation Email',
+          html: `<b>Congratulation! Now you can activate your account now. Please click this link to activate it.</b><a href="http://localhost:5000/backend4/api/v1/users/user-activation/${result.id}">Click!</>`
+        }
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error)
+            return helper.response(res, 400, 'Email not send !')
+          } else {
+            console.log('Email have been sent to:' + info.response)
+            return helper.response(
+              res,
+              200,
+              'Email verification is sent. Please check your email.'
+            )
+          }
+        })
 
         return helper.response(
           res,

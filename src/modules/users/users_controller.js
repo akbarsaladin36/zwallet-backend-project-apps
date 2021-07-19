@@ -67,6 +67,21 @@ module.exports = {
     }
   },
 
+  updateUserVerifiedAccount: async (req, res) => {
+    try {
+      const { id } = req.params
+      const result = await usersModel.updateUserData({ user_verify: 1 }, id)
+      return helper.response(
+        res,
+        200,
+        'Success verified your account. You can login right now.',
+        result
+      )
+    } catch (error) {
+      return helper.response(res, 400, 'Bad Request', null)
+    }
+  },
+
   updateUsersProfile: async (req, res) => {
     try {
       const id = req.decodeToken.user_id
@@ -205,6 +220,65 @@ module.exports = {
       }
     } catch (error) {
       console.log(error)
+      return helper.response(res, 404, 'Bad Request', null)
+    }
+  },
+
+  deleteUserAccount: async (req, res) => {
+    try {
+      const id = req.decodeToken.user_id
+      const result = await usersModel.getOneUserData(id)
+      if (result.length > 0) {
+        const newResult = await usersModel.deleteOneUserData(id)
+        return helper.response(
+          res,
+          200,
+          'the user with id is deleted successfully',
+          newResult
+        )
+      } else {
+        return helper.response(res, 400, 'the user with id is not found.', null)
+      }
+    } catch (error) {
+      return helper.response(res, 404, 'Bad Request', null)
+    }
+  },
+
+  deleteUserImage: async (req, res) => {
+    try {
+      const id = req.decodeToken.user_id
+      const updateData = await usersModel.getOneUserData(id)
+      if (updateData.length > 0) {
+        if (updateData.length > 0) {
+          const imageDelete = updateData[0].user_account_image
+          const imageExist = fs.existsSync(`src/uploads/${imageDelete}`)
+
+          if (imageExist && imageDelete) {
+            fs.unlink(`src/uploads/${imageDelete}`, (err) => {
+              if (err) throw err
+            })
+          }
+        }
+        const setData = {
+          user_image: '',
+          user_updated_at: new Date(Date.now())
+        }
+        const result = await usersModel.updateUserData(setData, id)
+        return helper.response(
+          res,
+          200,
+          `Success deleting an profile image with ${id}`,
+          result
+        )
+      } else {
+        return helper.response(
+          res,
+          403,
+          `the user image with ${id} is not found. Please try again.`,
+          null
+        )
+      }
+    } catch (error) {
       return helper.response(res, 404, 'Bad Request', null)
     }
   }
