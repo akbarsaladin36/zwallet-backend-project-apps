@@ -20,6 +20,12 @@ router.get(
   transactionController.getUsersBalanceById
 )
 
+router.get(
+  '/summary',
+  authMiddleware.userAuthentication,
+  transactionController.getTransactionSummary
+)
+
 router.post(
   '/',
   authMiddleware.userAuthentication,
