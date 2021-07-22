@@ -109,7 +109,7 @@ module.exports = {
   getTotalTransactionPerDayData: (id) => {
     return new Promise((resolve, reject) => {
       connection.query(
-        'SELECT DAYNAME(transaction_created_at) AS day_name, SUM(transaction_amount) AS total_amount FROM transaction WHERE (transaction_sender_id = ? OR transaction_receiver_id = ?) AND (transaction_status = "N" AND transaction_status = "Y") AND WEEK(transaction_created_at) = WEEK(NOW()) GROUP BY DAYNAME(transaction_created_at)',
+        'SELECT DAYNAME(transaction_created_at) AS day_name, SUM(transaction_amount) AS total_amount FROM transaction WHERE (transaction_sender_id = ? OR transaction_receiver_id = ?) AND (transaction_status = NULL OR transaction_status = "Y") AND WEEK(transaction_created_at) = WEEK(NOW()) GROUP BY DAYNAME(transaction_created_at)',
         [id, id],
         (error, result) => {
           if (!error) {
